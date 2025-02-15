@@ -50,38 +50,3 @@ def read_file(bucket_name, file_name, camada):
         print(f"❌ Erro ao ler o arquivo {file_name}: {e}")
         return None
 
-
-class Validator:
-    def __init__(self, df: pd.DataFrame):
-        self.df = df
-
-    def has_data(self):
-        return not self.df.empty
-
-    def has_columns(self, required_columns):
-        missing_columns = [col for col in required_columns if col not in self.df.columns]
-        if missing_columns:
-            return f"As seguintes colunas estão ausentes: {missing_columns}"
-        return True
-
-    def validate_dtypes(self, expected_dtypes):
-        for col, expected_dtype in expected_dtypes.items():
-            if col not in self.df.columns:
-                return f"Coluna {col} ausente no DataFrame."
-            if self.df[col].dtype != expected_dtype:
-                return f"Coluna {col} tem tipo {self.df[col].dtype}, mas o esperado era {expected_dtype}."
-        return True
-    
-    def check_null_or_empty(self, columns=None):
-        if columns is None:
-            columns = self.df.columns  
-
-        null_columns = [col for col in columns if self.df[col].isnull().any()]
-        empty_columns = [col for col in columns if self.df[col].astype(str).str.strip().eq("").any()]
-
-        if null_columns or empty_columns:
-            return {
-                "colunas_com_null": null_columns,
-                "colunas_com_branco": empty_columns
-            }
-        return True  # Nenhuma coluna tem valores nulos ou vazios
